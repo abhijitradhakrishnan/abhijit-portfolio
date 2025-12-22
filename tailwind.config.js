@@ -1,10 +1,17 @@
-export const darkMode = 'class';
-export const content = ['./index.html', './src/**/*.{js,jsx,ts,tsx}'];
-export const theme = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
     extend: {
-        colors: {
-            darkblue: '#0a192f', // dark navy tone
-        },
+      colors: {
+         darkblue: '#0a192f', // dark navy tone
+      }
     },
-};
-export const plugins = [];
+  },
+  darkMode: 'class',
+  plugins: [],
+}
