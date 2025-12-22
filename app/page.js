@@ -1,11 +1,5 @@
-import Image from "next/image";
+import Home from "@/sections/Home";
 
-export default function Home() {
-  return (
-    <>
-      <div className="min-h-screen flex items-center justify-center">
-        <h1 className="text-3xl font-bold">Home Page</h1>
-      </div>
-    </>
-  );
+export default function Page() {
+  return <Home />;
 }
