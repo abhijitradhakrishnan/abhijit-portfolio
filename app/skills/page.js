@@ -1,7 +1,5 @@
+import Skills from "@/sections/Skills";
+
 export default function SkillsPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-3xl font-bold">Skiils Page</h1>
-    </div>
-  );
+  return <Skills/>
 }
