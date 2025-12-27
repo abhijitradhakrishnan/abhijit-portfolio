@@ -94,7 +94,7 @@ const Connect = () => {
     {
       icon: <Twitter className="w-5 h-5" />,
       label: "X",
-      link: "https://x.com/aaddyshrivastav",
+      link: "https://x.com/AbhijitRadhakr1",
     },
   ];
 
