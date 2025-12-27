@@ -2,58 +2,54 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-// 1️⃣ Create the Theme Context
+// Theme context for light/dark mode
 const ThemeContext = createContext();
 
-// 2️⃣ Provider component to wrap the app
 export function ThemeProvider({ children }) {
-    // 2a. State: theme (light/dark) with lazy initialization
-    const [theme, setTheme] = useState(() => {
-        try {
-            const saved = localStorage.getItem("theme"); // check localStorage
-            if (saved) return saved;
-            // fallback to OS preference
-            return window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        } catch {
-             return "light"; // default
-        }
-    });
+  // Theme state (default light to avoid hydration mismatch)
+  const [theme, setTheme] = useState("light");
 
-    // 3️⃣ Apply theme to <html> and save to localStorage
-    useEffect(() => {
-        const root = document.documentElement;
-        if (theme === "dark") root.classList.add("dark");
-        else root.classList.remove("dark");
-        try {
-            localStorage.setItem("theme", theme)
-        } catch {}
-    },[theme]);
+  // Ensures code runs only on client
+  const [mounted, setMounted] = useState(false);
 
-    // 4️⃣ Keep in sync if OS preference changes
-    useEffect(() => {
-        const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
-        const handler = (e) => {
-            // only change if user hasn't explicitly chosen (i.e. no saved localStorage)
-            if (!localStorage.getItem("theme"))
-                setTheme(e.matches ? "dark" : "light");
-        };
-        mq?.addEventListener?.("change", handler);
-        return () => mq?.removeEventListener?.("change", handler);
-    },[]);
+  // Read theme or OS preference after client mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
 
-    // 5️⃣ Toggle function to switch theme
-    const toggle = () => setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setTheme(prefersDark ? "dark" : "light");
+    }
 
-    // 6️⃣ Provide theme, setter, and toggle to children
-    return (
-        <ThemeContext.Provider value={{ theme, setTheme, toggle }}>
-            {children}
-        </ThemeContext.Provider>
-    );
+    setMounted(true);
+  }, []);
+
+  // Apply theme to <html> class and persist preference
+  useEffect(() => {
+    if (!mounted) return;
+
+    const root = document.documentElement;
+    root.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme, mounted]);
+
+  // Toggle theme manually
+  const toggle = () =>
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+
+  // Prevent rendering until mounted (avoids hydration errors)
+  if (!mounted) return null;
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggle }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
-// 7️⃣ Custom hook to use theme context
+// Custom hook
 export const useTheme = () => useContext(ThemeContext);
