@@ -10,6 +10,28 @@ import {
   FaArrowRight,
   FaChartLine,
 } from "react-icons/fa";
+import { motion } from "framer-motion";
+
+/* ------------------ Animation Variants ------------------ */
+
+// Heading animation
+const fadeDown = {
+  hidden: { opacity: 0, y: -30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 70, damping: 15 },
+  },
+};
 
 const About = () => {
   const { theme } = useTheme();
@@ -102,7 +124,13 @@ const About = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16 pt-4">
+        <motion.div
+        variants={fadeDown}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="text-center mb-16 pt-4"
+        >
           <h1 className={`text-5xl md:text-6xl font-bold mb-4 ${headingColor}`}>
             About{" "}
             <span className="bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
@@ -114,10 +142,14 @@ const About = () => {
             A passionate full-stack developer focused on learning, building, and
             growing through real-world projects
           </p>
-        </div>
+        </motion.div>
 
         {/* Intro Card */}
-        <div
+        <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
           className={`rounded-2xl border ${borderColor} ${cardBg} p-8 md:p-10 mb-16 backdrop-blur-sm shadow-xl`}
         >
           <h2 className={`text-3xl font-bold mb-6 ${headingColor}`}>
@@ -139,7 +171,7 @@ const About = () => {
             systems. I continuously strive to write clean, maintainable code and
             learn emerging technologies.
           </p>
-        </div>
+        </motion.div>
 
         {/* Journey */}
         <div className="mb-16">

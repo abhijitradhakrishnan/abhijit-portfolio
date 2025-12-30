@@ -3,6 +3,42 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/Theme/ThemeContext";
+import { motion } from "framer-motion";
+
+/* ---------------- animation variants ---------------- */
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const fadeDown = {
+  hidden: { opacity: 0, y: -30 }, // 👈 starts ABOVE
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 70,
+      damping: 15,
+    },
+  },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+/* ---------------- data ---------------- */
 
 const categories = [
   {
@@ -55,6 +91,8 @@ const categories = [
   },
 ];
 
+/* ---------------- SkillBar (unchanged) ---------------- */
+
 const SkillBar = ({ skill, delay, isDark }) => {
   const [animatedLevel, setAnimatedLevel] = useState(0);
 
@@ -101,16 +139,11 @@ const SkillBar = ({ skill, delay, isDark }) => {
   );
 };
 
+/* ---------------- Page ---------------- */
+
 export default function SkillsPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-
-  const [isVisible, setIsVisible] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState(null);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   const containerBg = isDark ? "bg-black" : "bg-white";
   const textPrimary = isDark ? "text-gray-300" : "text-gray-700";
@@ -126,26 +159,28 @@ export default function SkillsPage() {
     >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div
-          className={`text-center mb-16 transition-all duration-1000 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-          }`}
+        <motion.div
+          variants={fadeDown}
+          initial="hidden"
+          animate="visible"
+          className="text-center mb-16"
         >
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent [text-fill-color:transparent] mb-4 leading-snug overflow-visible pb-1 pt-4">
             My Skills
           </h1>
-
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full mb-6" />
-
           <p className={`text-lg md:text-xl ${textPrimary} max-w-3xl mx-auto`}>
             A comprehensive overview of my technical expertise across different
             domains of software development.
           </p>
-        </div>
+        </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 animate-fade-in"
-        style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
         >
           {[
             ["15+", "Technologies"],
@@ -153,8 +188,9 @@ export default function SkillsPage() {
             ["2+", "Years Learning"],
             ["∞", "Curiosity for Tech"],
           ].map(([value, label]) => (
-            <div
+            <motion.div
               key={label}
+              variants={fadeUp}
               className={`text-center ${cardBg} rounded-2xl p-6 border-2 transition-all duration-300 hover:-translate-y-2`}
             >
               <div className={`text-3xl font-bold ${textSecondary}`}>
@@ -163,29 +199,22 @@ export default function SkillsPage() {
               <div className={`text-sm font-medium ${textPrimary}`}>
                 {label}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Skill Cards */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16"
+        >
           {categories.map((category, idx) => (
-            <div
-              key={category.title}
-              className={`transition-all duration-1000 ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-              onMouseEnter={() => setHoveredCard(idx)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <motion.div key={category.title} variants={fadeUp}>
               <div
-                className={`${cardBg} rounded-2xl border-2 p-8 transition-all duration-300 ${
-                  hoveredCard === idx
-                    ? "border-blue-500 shadow-lg shadow-blue-500/20"
-                    : ""
-                }`}
+                className={`${cardBg} rounded-2xl border-2 p-8 transition-all duration-300
+                hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-2`}
               >
                 <h2 className={`text-2xl font-bold mb-6 ${textSecondary}`}>
                   {category.title}
@@ -200,29 +229,33 @@ export default function SkillsPage() {
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Continuous Learning */}
-        <div
-          className={`mt-16 opacity-0 animate-fade-in rounded-2xl p-8 md:p-12 ${
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className={`mt-16 rounded-2xl p-8 md:p-12 ${
             isDark
               ? "bg-blue-950/50 border-2 border-blue-900/40"
               : "bg-blue-100/50 border-2 border-blue-200"
           }`}
-          style={{ animationDelay: "1.8s", animationFillMode: "forwards" }}
         >
-          <h2 className={`text-4xl font-bold mb-6 ${
+          <h2
+            className={`text-4xl font-bold mb-6 ${
               isDark ? "text-white" : "text-gray-900"
-            }`}>
-                Continuous Learning
-            </h2>
+            }`}
+          >
+            Continuous Learning
+          </h2>
+
           <p className={`text-lg mb-8 ${textPrimary}`}>
-            Technology evolves rapidly, and so do I. I&apos;m constantly learning new
-            frameworks, exploring emerging technologies, and refining my
-            existing skills. My journey in tech is just beginning, and I&apos;m
-            excited about what lies ahead.
+            Technology evolves rapidly, and so do I. I&apos;m constantly learning
+            new frameworks, exploring emerging technologies, and refining my
+            existing skills.
           </p>
 
           <div className="flex gap-4 flex-wrap">
@@ -234,29 +267,32 @@ export default function SkillsPage() {
               <span
                 key={item}
                 className={`${accentBg} border-2 ${
-                isDark ? "border-blue-800" : "border-blue-300"
-              } px-6 py-3 rounded-full text-sm font-semibold ${textPrimary}`}
+                  isDark ? "border-blue-800" : "border-blue-300"
+                } px-6 py-3 rounded-full text-sm font-semibold ${textPrimary}`}
               >
                 {item}
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* CTA */}
-        <div className={`text-center mt-16 opacity-0 animate-fade-in`}
-        style={{ animationDelay: "2.1s", animationFillMode: "forwards" }}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="text-center mt-16"
         >
           <div className="flex gap-4 justify-center flex-wrap">
             <Link href="/work">
-              <button className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transform duration-300 transition-all hover:-translate-y-1">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
                 View My Projects
               </button>
             </Link>
 
             <Link href="/connect">
               <button
-                className={`px-8 py-4 cursor-pointer rounded-lg font-semibold border-2 transition-all duration-300 transform hover:-translate-y-1 ${
+                className={`px-8 py-4 rounded-lg font-semibold border-2 transition-all hover:-translate-y-1 ${
                   isDark
                     ? "border-blue-400 text-blue-400 hover:bg-blue-950"
                     : "border-blue-600 text-blue-600 hover:bg-blue-50"
@@ -266,26 +302,8 @@ export default function SkillsPage() {
               </button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
-
-      {/* Animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-      `}</style>
     </div>
   );
 }
