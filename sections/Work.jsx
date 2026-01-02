@@ -84,7 +84,7 @@ const Work = () => {
       title: "My Portfolio",
       desc:
         "Personal portfolio with animations and dark/light mode.",
-      img: "/myport.png",
+      img: "/abhijit-portfolio.png",
       live: "https://abhijit-portfolio-eight.vercel.app/",
       git: "https://github.com/abhijitradhakrishnan/abhijit-portfolio",
       tech: ["Next.js", "Framer Motion"],
